@@ -17,7 +17,7 @@ import (
 
 type Connection struct {
 	id                    int64
-	WriteChan             chan miface.IMessage
+	WriteChan             chan miface.IPackage
 	Stop                  atomic.Value
 	Options               Options
 	ConType               miface.TypeConnection
@@ -31,7 +31,7 @@ func NewConnection(conType miface.TypeConnection, options Options, localAddr, re
 	c := &Connection{
 		id:         GenId(),
 		Options:    options,
-		WriteChan:  make(chan miface.IMessage, 0),
+		WriteChan:  make(chan miface.IPackage, 0),
 		ConType:    conType,
 		localAddr:  localAddr,
 		remoteAddr: remoteAddr,
@@ -57,7 +57,7 @@ func (c *Connection) GetRemoteAddr() net.Addr {
 	return c.remoteAddr
 }
 
-func (c *Connection) Send(message miface.IMessage) bool {
+func (c *Connection) Send(message miface.IPackage) bool {
 	if c.WriteChan == nil {
 		return false
 	}

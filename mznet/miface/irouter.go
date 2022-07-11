@@ -12,6 +12,6 @@ type (
 	IRouter interface {
 		OnConnected(connection IConnection)
 		OnDisconnect(connection IConnection)
-		OnProcess(connection IConnection, message IMessage)
+		OnProcess(connection IConnection, message IPackage)
 	}
 )

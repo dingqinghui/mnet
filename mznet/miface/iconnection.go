@@ -17,7 +17,7 @@ type (
 		GetId() int64
 		GetType() TypeConnection
 
-		Send(message IMessage) bool
+		Send(message IPackage) bool
 
 		GetLocalAddr() net.Addr
 		GetRemoteAddr() net.Addr

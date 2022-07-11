@@ -28,7 +28,7 @@ func NewCommonCodec() miface2.ICodec {
 	return &commonCodec{}
 }
 
-func (d *commonCodec) Unpack(con net.Conn, message miface2.IMessage) error {
+func (d *commonCodec) Unpack(con net.Conn, message miface2.IPackage) error {
 	headBuf := make([]byte, headSize)
 	if _, err := con.Read(headBuf); err != nil {
 		return err
@@ -46,7 +46,7 @@ func (d *commonCodec) Unpack(con net.Conn, message miface2.IMessage) error {
 	message.SetData(dataBuf)
 	return nil
 }
-func (d *commonCodec) Pack(con net.Conn, msg miface2.IMessage) error {
+func (d *commonCodec) Pack(con net.Conn, msg miface2.IPackage) error {
 	len := msg.GetDataLen() + headSize
 	buf := make([]byte, len, len)
 	// 写入头

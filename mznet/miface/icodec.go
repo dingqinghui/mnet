@@ -14,7 +14,7 @@ import (
 
 type (
 	ICodec interface {
-		Pack(con net.Conn, msg IMessage) error
-		Unpack(con net.Conn, message IMessage) error
+		Pack(con net.Conn, msg IPackage) error
+		Unpack(con net.Conn, message IPackage) error
 	}
 )

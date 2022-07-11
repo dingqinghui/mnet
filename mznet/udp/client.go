@@ -48,7 +48,7 @@ func (u *client) Connect() error {
 		if !ok {
 			return errors.New("change type connection fail")
 		}
-		udpConnection.RevMsg(core.NewMessage(uint32(n), b[:n]))
+		udpConnection.RevMsg(core.NewPackage(uint32(n), b[:n]))
 	}
 	return nil
 }

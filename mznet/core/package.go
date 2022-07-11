@@ -1,7 +1,7 @@
 /**
  * @Author: dingQingHui
  * @Description:
- * @File: message
+ * @File: Package
  * @Version: 1.0.0
  * @Date: 2022/7/7 16:33
  */
@@ -13,30 +13,30 @@ import (
 )
 
 type (
-	message struct {
+	Package struct {
 		data    []byte
 		dataLen uint32
 	}
 )
 
-func NewMessage(dataLen uint32, data []byte) miface.IMessage {
-	return &message{
+func NewPackage(dataLen uint32, data []byte) miface.IPackage {
+	return &Package{
 		data:    data,
 		dataLen: dataLen,
 	}
 }
 
-func (m *message) GetDataLen() uint32 {
+func (m *Package) GetDataLen() uint32 {
 	return m.dataLen
 }
 
-func (m *message) GetData() []byte {
+func (m *Package) GetData() []byte {
 	return m.data
 }
 
-func (m *message) SetDataLen(dataLen uint32) {
+func (m *Package) SetDataLen(dataLen uint32) {
 	m.dataLen = dataLen
 }
-func (m *message) SetData(data []byte) {
+func (m *Package) SetData(data []byte) {
 	m.data = data
 }

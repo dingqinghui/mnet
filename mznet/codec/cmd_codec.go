@@ -23,7 +23,7 @@ func NewCmdCodec() miface2.ICodec {
 	return &cmdCodec{}
 }
 
-func (d *cmdCodec) Unpack(con net.Conn, message miface2.IMessage) error {
+func (d *cmdCodec) Unpack(con net.Conn, message miface2.IPackage) error {
 	reader := bufio.NewReader(con)
 	str, err := reader.ReadString('\n')
 	if err != nil {
@@ -34,7 +34,7 @@ func (d *cmdCodec) Unpack(con net.Conn, message miface2.IMessage) error {
 	return nil
 }
 
-func (d *cmdCodec) Pack(con net.Conn, msg miface2.IMessage) error {
+func (d *cmdCodec) Pack(con net.Conn, msg miface2.IPackage) error {
 	if _, err := con.Write(msg.GetData()); err != nil {
 		return err
 	}

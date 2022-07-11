@@ -54,7 +54,7 @@ func (t *connection) waitExit() {
 func (t *connection) read() {
 	defer t.Close()
 	for true {
-		msg := core.NewMessage(0, nil)
+		msg := core.NewPackage(0, nil)
 		err := t.Options.Codec.Unpack(t.con, msg)
 		if err != nil {
 			return

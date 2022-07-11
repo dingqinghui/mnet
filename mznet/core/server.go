@@ -46,8 +46,12 @@ func (s *Server) OnDisconnect(connection miface.IConnection) {
 	s.CMgr.Delete(connection)
 	s.Options.Router.OnDisconnect(connection)
 }
-func (s *Server) OnProcess(connection miface.IConnection, message miface.IMessage) {
+func (s *Server) OnProcess(connection miface.IConnection, message miface.IPackage) {
 	s.Options.Router.OnProcess(connection, message)
+}
+
+func (s *Server) GetRouter() miface.IRouter {
+	return s.Options.Router
 }
 
 func (s *Server) IsClose() bool {
@@ -82,4 +86,7 @@ func (s *Server) Close() bool {
 
 	s.Cancel()
 	return true
+}
+func (s *Server) Run() error {
+	return nil
 }

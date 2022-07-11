@@ -22,5 +22,5 @@ func (r *defaultRouter) OnConnected(connection miface2.IConnection) {
 }
 func (r *defaultRouter) OnDisconnect(connection miface2.IConnection) {
 }
-func (r *defaultRouter) OnProcess(connection miface2.IConnection, message miface2.IMessage) {
+func (r *defaultRouter) OnProcess(connection miface2.IConnection, iPackage miface2.IPackage) {
 }

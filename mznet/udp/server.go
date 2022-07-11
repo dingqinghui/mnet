@@ -83,7 +83,7 @@ func (s *server) accept() {
 			log.Printf("change type connection fail")
 			continue
 		}
-		udpCon.RevMsg(core.NewMessage(uint32(n), b[:n]))
+		udpCon.RevMsg(core.NewPackage(uint32(n), b[:n]))
 	}
 }
 

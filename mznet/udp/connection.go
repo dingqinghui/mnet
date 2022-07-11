@@ -17,14 +17,14 @@ import (
 type connection struct {
 	*core.Connection
 	con      *net.UDPConn
-	readChan chan miface.IMessage
+	readChan chan miface.IPackage
 }
 
 func newConnection(_ string, con net.Conn, conType miface.TypeConnection, options core.Options) miface.IConnection {
 	c := &connection{
 		con:        con.(*net.UDPConn),
 		Connection: core.NewConnection(conType, options, con.LocalAddr(), con.RemoteAddr()),
-		readChan:   make(chan miface.IMessage, 0),
+		readChan:   make(chan miface.IPackage, 0),
 	}
 	c.start()
 	return c
@@ -68,7 +68,7 @@ func (u *connection) write() {
 	}
 }
 
-func (u *connection) RevMsg(message miface.IMessage) bool {
+func (u *connection) RevMsg(message miface.IPackage) bool {
 	if u.readChan == nil {
 		return false
 	}

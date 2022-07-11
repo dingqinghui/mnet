@@ -8,7 +8,7 @@
 
 package miface
 
-type IMessage interface {
+type IPackage interface {
 	GetDataLen() uint32
 	GetData() []byte
 
