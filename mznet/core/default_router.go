@@ -9,18 +9,18 @@
 package core
 
 import (
-	miface2 "mz/mznet/miface"
+	miface "github.com/dingqinghui/mz/mznet/miface"
 )
 
 type defaultRouter struct {
 }
 
-func NewDefaultRouter() miface2.IRouter {
+func NewDefaultRouter() miface.IRouter {
 	return &defaultRouter{}
 }
-func (r *defaultRouter) OnConnected(connection miface2.IConnection) {
+func (r *defaultRouter) OnConnected(connection miface.IConnection) {
 }
-func (r *defaultRouter) OnDisconnect(connection miface2.IConnection) {
+func (r *defaultRouter) OnDisconnect(connection miface.IConnection) {
 }
-func (r *defaultRouter) OnProcess(connection miface2.IConnection, iPackage miface2.IPackage) {
+func (r *defaultRouter) OnProcess(connection miface.IConnection, iPackage miface.IPackage) {
 }

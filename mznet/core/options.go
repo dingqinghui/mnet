@@ -10,7 +10,7 @@ package core
 
 import (
 	"context"
-	"mz/mznet/miface"
+	"github.com/dingqinghui/mz/mznet/miface"
 	"net"
 )
 

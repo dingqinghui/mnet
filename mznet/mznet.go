@@ -9,11 +9,11 @@
 package mznet
 
 import (
+	"github.com/dingqinghui/mz/mznet/core"
+	"github.com/dingqinghui/mz/mznet/miface"
+	"github.com/dingqinghui/mz/mznet/tcp"
+	"github.com/dingqinghui/mz/mznet/udp"
 	"log"
-	"mz/mznet/core"
-	"mz/mznet/miface"
-	"mz/mznet/tcp"
-	"mz/mznet/udp"
 )
 
 var (

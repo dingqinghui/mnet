@@ -9,9 +9,9 @@
 package actor
 
 import (
+	"github.com/dingqinghui/mz/iface"
+	"github.com/dingqinghui/mz/mznet/miface"
 	"log"
-	"mz/iface"
-	"mz/mznet/miface"
 )
 
 type (

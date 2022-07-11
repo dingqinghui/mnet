@@ -9,7 +9,7 @@
 package parser
 
 import (
-	"mz/message"
+	"github.com/dingqinghui/mz/message"
 	"testing"
 )
 

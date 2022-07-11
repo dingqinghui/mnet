@@ -10,7 +10,7 @@ package handler
 
 import (
 	"fmt"
-	"mz/iface"
+	"github.com/dingqinghui/mz/iface"
 	"sync"
 )
 

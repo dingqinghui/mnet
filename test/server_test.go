@@ -9,15 +9,15 @@
 package test
 
 import (
+	"github.com/dingqinghui/mz/iface"
+	"github.com/dingqinghui/mz/message"
+	"github.com/dingqinghui/mz/mznet"
+	"github.com/dingqinghui/mz/mznet/codec"
+	"github.com/dingqinghui/mz/mznet/core"
+	"github.com/dingqinghui/mz/mznet/miface"
+	"github.com/dingqinghui/mz/parser"
+	"github.com/dingqinghui/mz/service"
 	"log"
-	"mz/iface"
-	"mz/message"
-	"mz/mznet"
-	"mz/mznet/codec"
-	"mz/mznet/core"
-	"mz/mznet/miface"
-	"mz/parser"
-	"mz/service"
 	"testing"
 	"time"
 )

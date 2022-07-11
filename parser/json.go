@@ -13,8 +13,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"mz/iface"
-	"mz/message"
+	"github.com/dingqinghui/mz/iface"
+	"github.com/dingqinghui/mz/message"
 	"reflect"
 	"sync"
 )

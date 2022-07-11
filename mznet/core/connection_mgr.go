@@ -9,7 +9,7 @@
 package core
 
 import (
-	"mz/mznet/miface"
+	"github.com/dingqinghui/mz/mznet/miface"
 	"sync"
 )
 

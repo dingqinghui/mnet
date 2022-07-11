@@ -9,8 +9,8 @@
 package tcp
 
 import (
-	"mz/mznet/core"
-	"mz/mznet/miface"
+	"github.com/dingqinghui/mz/mznet/core"
+	"github.com/dingqinghui/mz/mznet/miface"
 	"net"
 )
 

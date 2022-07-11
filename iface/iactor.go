@@ -8,7 +8,7 @@
 
 package iface
 
-import "mz/mznet/miface"
+import "github.com/dingqinghui/mz/mznet/miface"
 
 var (
 	ActorMessageNetWork ActorMessageType = 1

@@ -10,7 +10,7 @@ package codec
 
 import (
 	"bufio"
-	miface2 "mz/mznet/miface"
+	"github.com/dingqinghui/mz/mznet/miface"
 	"net"
 )
 
@@ -19,11 +19,11 @@ type (
 	}
 )
 
-func NewCmdCodec() miface2.ICodec {
+func NewCmdCodec() miface.ICodec {
 	return &cmdCodec{}
 }
 
-func (d *cmdCodec) Unpack(con net.Conn, message miface2.IPackage) error {
+func (d *cmdCodec) Unpack(con net.Conn, message miface.IPackage) error {
 	reader := bufio.NewReader(con)
 	str, err := reader.ReadString('\n')
 	if err != nil {
@@ -34,7 +34,7 @@ func (d *cmdCodec) Unpack(con net.Conn, message miface2.IPackage) error {
 	return nil
 }
 
-func (d *cmdCodec) Pack(con net.Conn, msg miface2.IPackage) error {
+func (d *cmdCodec) Pack(con net.Conn, msg miface.IPackage) error {
 	if _, err := con.Write(msg.GetData()); err != nil {
 		return err
 	}

@@ -8,7 +8,7 @@
 
 package message
 
-import "mz/iface"
+import "github.com/dingqinghui/mz/iface"
 
 type Message struct {
 	msgId uint32

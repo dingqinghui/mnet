@@ -9,9 +9,9 @@
 package test
 
 import (
-	"mz/mznet"
-	"mz/mznet/codec"
-	"mz/mznet/core"
+	"github.com/dingqinghui/mz/mznet"
+	"github.com/dingqinghui/mz/mznet/codec"
+	"github.com/dingqinghui/mz/mznet/core"
 	"testing"
 )
 

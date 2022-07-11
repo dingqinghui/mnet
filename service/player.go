@@ -9,11 +9,11 @@
 package service
 
 import (
-	"mz/actor"
-	"mz/handler"
-	"mz/iface"
-	"mz/mznet/miface"
-	"mz/parser"
+	"github.com/dingqinghui/mz/actor"
+	"github.com/dingqinghui/mz/handler"
+	"github.com/dingqinghui/mz/iface"
+	"github.com/dingqinghui/mz/mznet/miface"
+	"github.com/dingqinghui/mz/parser"
 )
 
 var (

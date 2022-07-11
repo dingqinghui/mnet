@@ -9,9 +9,9 @@
 package udp
 
 import (
+	"github.com/dingqinghui/mz/mznet/core"
+	"github.com/dingqinghui/mz/mznet/miface"
 	"log"
-	"mz/mznet/core"
-	"mz/mznet/miface"
 	"net"
 )
 

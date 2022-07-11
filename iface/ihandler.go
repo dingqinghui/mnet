@@ -8,7 +8,7 @@
 
 package iface
 
-import "mz/mznet/miface"
+import "github.com/dingqinghui/mz/mznet/miface"
 
 type (
 	HandlerFun func(server miface.IServer, connection miface.IConnection, msg IMessage)
