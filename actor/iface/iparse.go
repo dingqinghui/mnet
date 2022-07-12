@@ -11,7 +11,7 @@ package iface
 type (
 	IParse interface {
 		Register(msgId uint32, msg interface{}) error
-		UnMarshal(data []byte) (IMessage, error)
-		Marshal(IMessage) ([]byte, error)
+		UnMarshal(data []byte) ([]interface{}, error)
+		Marshal(...interface{}) ([]byte, error)
 	}
 )

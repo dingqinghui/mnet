@@ -6,7 +6,7 @@
  * @Date: 2022/7/11 15:14
  */
 
-package iface
+package message
 
 type (
 	IMessage interface {

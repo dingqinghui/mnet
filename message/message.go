@@ -8,14 +8,12 @@
 
 package message
 
-import "github.com/dingqinghui/mz/iface"
-
 type Message struct {
 	msgId uint32
 	msg   interface{}
 }
 
-func NewMessage(msgId uint32, msg interface{}) iface.IMessage {
+func NewMessage(msgId uint32, msg interface{}) IMessage {
 	return &Message{
 		msgId: msgId,
 		msg:   msg,

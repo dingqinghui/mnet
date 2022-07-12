@@ -6,12 +6,15 @@
  * @Date: 2022/7/11 15:51
  */
 
-package iface
+package handler
 
-import "github.com/dingqinghui/mz/mznet/miface"
+import (
+	"github.com/dingqinghui/mz/message"
+	"github.com/dingqinghui/mz/mznet/miface"
+)
 
 type (
-	HandlerFun func(server miface.IServer, connection miface.IConnection, msg IMessage)
+	HandlerFun func(connection miface.IConnection, msg message.IMessage)
 
 	IHandler interface {
 		SetHandler(msgId uint32, handler HandlerFun) error

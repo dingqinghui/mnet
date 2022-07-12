@@ -9,62 +9,47 @@
 package actor
 
 import (
-	"github.com/dingqinghui/mz/iface"
+	"github.com/dingqinghui/mz/actor/iface"
+	"github.com/dingqinghui/mz/mznet"
+	"github.com/dingqinghui/mz/mznet/core"
 	"github.com/dingqinghui/mz/mznet/miface"
 	"log"
 )
 
 type (
 	Protocol struct {
-		msgType iface.ActorMessageType
-		parse   iface.IParse
-		handler iface.IHandler
+		msgType  iface.ActorMessageType
+		parse    iface.IParse
+		dispatch iface.DispatchFun
 	}
-
-	Message struct {
-		msgType    iface.ActorMessageType
-		server     miface.IServer
-		connection miface.IConnection
-		pack       miface.IPackage
-	}
-
 	Actor struct {
 		id        uint64
-		revChan   chan *iface.Message
+		revChan   chan iface.IActorMessage
 		protocols map[iface.ActorMessageType]*Protocol
 	}
 )
 
-func NewMessage(msgType iface.ActorMessageType, server miface.IServer, connection miface.IConnection, pack miface.IPackage) *Message {
-	return &Message{
-		msgType:    msgType,
-		server:     server,
-		connection: connection,
-		pack:       pack,
-	}
-}
-
-func New() iface.IActor {
+func New() *Actor {
 	return &Actor{
-		revChan:   make(chan *iface.Message, 0),
+		revChan:   make(chan iface.IActorMessage, 1),
 		protocols: make(map[iface.ActorMessageType]*Protocol),
 	}
 }
-func (a *Actor) Init(args ...interface{}) {
+func (a *Actor) Init(_ ...interface{}) {
 
 }
 func (a *Actor) GetId() uint64 {
 	return a.id
 }
 
-func (a *Actor) RegistryProtocol(msgType iface.ActorMessageType, parse iface.IParse, handler iface.IHandler) {
+func (a *Actor) RegistryProtocol(msgType iface.ActorMessageType, parse iface.IParse, dispatch iface.DispatchFun) {
 	a.protocols[msgType] = &Protocol{
-		parse:   parse,
-		handler: handler,
+		parse:    parse,
+		dispatch: dispatch,
 	}
 }
 
-func (a *Actor) PutMessage(msg *iface.Message) {
+func (a *Actor) PutMessage(msg iface.IActorMessage) {
 	a.revChan <- msg
 }
 
@@ -78,38 +63,67 @@ func (a *Actor) Run() {
 		}
 	}()
 }
-func (a *Actor) Dispatch(msg *iface.Message) {
-	protocol, ok := a.protocols[msg.MsgType]
+func (a *Actor) Dispatch(msg iface.IActorMessage) {
+	protocol, ok := a.protocols[1]
 	if !ok {
-		log.Printf("not registry protocol type:%d", msg.MsgType)
+		log.Printf("not registry protocol type:%d", msg.GetType())
 		return
 	}
 
 	if protocol.parse == nil {
-		log.Printf("protocol not parse type:%d", msg.MsgType)
+		log.Printf("protocol not parse type:%d", msg.GetType())
 		return
 	}
 
-	if protocol.handler == nil {
-		log.Printf("protocol not handler type:%d", msg.MsgType)
+	if protocol.dispatch == nil {
+		log.Printf("protocol not handler type:%d", msg.GetType())
 		return
 	}
 
-	useMsg, err := protocol.parse.UnMarshal(msg.Pack.GetData())
+	rets, err := protocol.parse.UnMarshal(msg.GetData())
 	if err != nil {
-		log.Printf("protocol parse fail type:%d", msg.MsgType)
+		log.Printf("protocol parse fail type:%d", msg.GetType())
 		return
 	}
-
-	f, err := protocol.handler.GetHandler(useMsg.MsgId())
-	if err != nil {
-		log.Printf("protocol handler is nil msgId:%d", useMsg.MsgId())
-		return
-	}
-
-	f(msg.Server, msg.Connection, useMsg)
+	protocol.dispatch(msg, rets...)
 }
 
 func (a *Actor) Destroy() {
 
+}
+
+func (a *Actor) OnConnected(connection miface.IConnection) {
+	msg := NewSocketMessage(SocketActConnected, connection, nil)
+	a.PutMessage(msg)
+}
+
+func (a *Actor) OnDisconnect(connection miface.IConnection) {
+	msg := NewSocketMessage(SocketActDisconnect, connection, nil)
+	a.PutMessage(msg)
+}
+
+func (a *Actor) OnProcess(connection miface.IConnection, pack miface.IPackage) {
+	msg := NewSocketMessage(SocketActData, connection, pack.GetData())
+	a.PutMessage(msg)
+}
+
+func (a *Actor) NetListen(options ...core.Option) miface.IServer {
+	// 网络消息 回调到 actor基类
+	options = append(options, core.WithRouter(a))
+	s := mznet.NewServer(options...)
+	if err := s.Run(); err != nil {
+		log.Printf("server start fail")
+		return nil
+	}
+	return s
+}
+
+func (a *Actor) NetConnect(options ...core.Option) miface.IClient {
+	options = append(options, core.WithRouter(a))
+	c := mznet.NewClient(options...)
+	if err := c.Connect(); err != nil {
+		log.Printf("client connect  fail")
+		return nil
+	}
+	return c
 }

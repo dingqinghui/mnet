@@ -1,19 +1,16 @@
 /**
  * @Author: dingQingHui
  * @Description:
- * @File: server_test
+ * @File: main_server
  * @Version: 1.0.0
- * @Date: 2022/7/7 18:04
+ * @Date: 2022/7/12 15:56
  */
 
-package test
+package main
 
-import (
-	"github.com/dingqinghui/mz/service"
-	"testing"
-)
+import "github.com/dingqinghui/mz/service"
 
-func TestServer(t *testing.T) {
+func main() {
 	watchDog := service.NewWatchdog()
 	watchDog.Init()
 	watchDog.Run()

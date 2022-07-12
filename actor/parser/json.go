@@ -13,8 +13,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/dingqinghui/mz/iface"
-	"github.com/dingqinghui/mz/message"
+	"github.com/dingqinghui/mz/actor/iface"
 	"reflect"
 	"sync"
 )
@@ -48,25 +47,30 @@ func (j *JsonParser) Register(msgId uint32, msg interface{}) error {
 	return nil
 }
 
-func (j *JsonParser) Marshal(msg iface.IMessage) ([]byte, error) {
-	body, err := json.Marshal(msg.Msg())
+func (j *JsonParser) Marshal(args ...interface{}) ([]byte, error) {
+	msgId := args[0].(uint32)
+	msg := args[1]
+	body, err := json.Marshal(msg)
 	if err != nil {
 		return nil, err
 	}
-	msgIdLen := binary.Size(msg.MsgId())
+	msgIdLen := binary.Size(msgId)
 
 	length := len(body) + msgIdLen
 
 	buf := make([]byte, length, length)
 
-	binary.BigEndian.PutUint32(buf, msg.MsgId())
+	binary.BigEndian.PutUint32(buf, msgId)
 
 	copy(buf[msgIdLen:], body)
 
 	return buf, nil
 }
 
-func (j *JsonParser) UnMarshal(data []byte) (iface.IMessage, error) {
+func (j *JsonParser) UnMarshal(data []byte) ([]interface{}, error) {
+	if len(data) <= 0 {
+		return nil, nil
+	}
 	msgId := binary.BigEndian.Uint32(data)
 	t, ok := j.m[msgId]
 	if !ok {
@@ -77,5 +81,5 @@ func (j *JsonParser) UnMarshal(data []byte) (iface.IMessage, error) {
 	if err := json.Unmarshal(data[msgIdLen:], msg); err != nil {
 		return nil, err
 	}
-	return message.NewMessage(msgId, msg), nil
+	return []interface{}{msgId, msg}, nil
 }

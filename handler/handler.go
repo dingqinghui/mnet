@@ -10,24 +10,23 @@ package handler
 
 import (
 	"fmt"
-	"github.com/dingqinghui/mz/iface"
 	"sync"
 )
 
 type (
 	Handler struct {
 		sync.RWMutex
-		m map[uint32]iface.HandlerFun
+		m map[uint32]HandlerFun
 	}
 )
 
-func NewHandler() iface.IHandler {
+func NewHandler() IHandler {
 	return &Handler{
-		m: make(map[uint32]iface.HandlerFun),
+		m: make(map[uint32]HandlerFun),
 	}
 }
 
-func (h *Handler) SetHandler(msgId uint32, handler iface.HandlerFun) error {
+func (h *Handler) SetHandler(msgId uint32, handler HandlerFun) error {
 	h.Lock()
 	defer h.Unlock()
 	if _, ok := h.m[msgId]; ok {
@@ -37,7 +36,7 @@ func (h *Handler) SetHandler(msgId uint32, handler iface.HandlerFun) error {
 	return nil
 }
 
-func (h *Handler) GetHandler(msgId uint32) (iface.HandlerFun, error) {
+func (h *Handler) GetHandler(msgId uint32) (HandlerFun, error) {
 	h.RLock()
 	defer h.RUnlock()
 	if handler, ok := h.m[msgId]; !ok {
