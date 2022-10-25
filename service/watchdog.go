@@ -12,6 +12,7 @@ import (
 	"github.com/dingqinghui/mz/actor"
 	"github.com/dingqinghui/mz/actor/iface"
 	"github.com/dingqinghui/mz/actor/parser"
+	iface2 "github.com/dingqinghui/mz/actorNew"
 	"github.com/dingqinghui/mz/handler"
 	"log"
 
@@ -32,6 +33,7 @@ func init() {
 
 	registryMessage(1, &MessageEcho{}, EchoHandle)
 
+	actor.RegistryActor("watchDog", NewWatchdog)
 }
 
 func EchoHandle(connection miface.IConnection, msg message.IMessage) {
@@ -55,13 +57,13 @@ type (
 	}
 
 	Watchdog struct {
-		*actor.Actor
+		*actor.BaseActor
 	}
 )
 
-func NewWatchdog() iface.IActor {
+func NewWatchdog() iface2.IActor {
 	return &Watchdog{
-		Actor: actor.New(),
+		BaseActor: actor.NewBase(),
 	}
 }
 

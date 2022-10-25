@@ -9,15 +9,16 @@
 package test
 
 import (
-	"github.com/dingqinghui/mz/service"
+	"github.com/dingqinghui/mz/actor"
+	"net"
 	"testing"
 )
 
 func TestClient(t *testing.T) {
+	c, err := net.Dial("tcp", "192.168.1.149:22000")
 
-	watchDog := service.NewClient()
-	watchDog.Init()
-	watchDog.Run()
+	println(c, err)
+	actor.NewService("client")
 
 	select {}
 }

@@ -1,0 +1,228 @@
+@startuml
+namespace codec {
+    class cmdCodec << (S,Aquamarine) >> {
+        + Unpack(con net.Conn, message miface.IPackage) error
+        + Pack(con net.Conn, msg miface.IPackage) error
+
+    }
+    class commonCodec << (S,Aquamarine) >> {
+        + Unpack(con net.Conn, message miface.IPackage) error
+        + Pack(con net.Conn, msg miface.IPackage) error
+
+    }
+}
+
+"miface.ICodec" <|-- "codec.cmdCodec"
+"miface.ICodec" <|-- "codec.commonCodec"
+
+namespace core {
+    class Connection << (S,Aquamarine) >> {
+        - id int64
+        - localAddr net.Addr
+
+        + WriteChan <font color=blue>chan</font> miface.IPackage
+        + Stop atomic.Value
+        + Options Options
+        + ConType miface.TypeConnection
+        + Ctx context.Context
+        + Cancel context.CancelFunc
+
+        - init() 
+
+        + GetId() int64
+        + GetLocalAddr() net.Addr
+        + GetRemoteAddr() net.Addr
+        + Send(message miface.IPackage) bool
+        + GetType() miface.TypeConnection
+        + IsClose() bool
+        + SetClose() bool
+        + Close() bool
+
+    }
+    class ConnectionMgr << (S,Aquamarine) >> {
+        - cMap <font color=blue>map</font>[int64]miface.IConnection
+
+        + Add(connection miface.IConnection) 
+        + Delete(connection miface.IConnection) 
+
+    }
+    class Options << (S,Aquamarine) >> {
+        + ParentCtx context.Context
+        + Network string
+        + Router miface.IRouter
+        + Codec miface.ICodec
+        + UdpAddr net.Addr
+
+    }
+    class Package << (S,Aquamarine) >> {
+        - data []byte
+        - dataLen uint32
+
+        + GetDataLen() uint32
+        + GetData() []byte
+        + SetDataLen(dataLen uint32) 
+        + SetData(data []byte) 
+
+    }
+    class Server << (S,Aquamarine) >> {
+        + Options Options
+        + CMgr miface.IConnectionMgr
+        + Stop atomic.Value
+        + Ctx context.Context
+        + Cancel context.CancelFunc
+
+        - init() 
+
+        + OnConnected(connection miface.IConnection) 
+        + OnDisconnect(connection miface.IConnection) 
+        + OnProcess(connection miface.IConnection, message miface.IPackage) 
+        + GetRouter() miface.IRouter
+        + IsClose() bool
+        + Destroy() bool
+        + Close() bool
+        + Run() error
+
+    }
+    class core.Option << (T, #FF7700) >>  {
+    }
+    class defaultRouter << (S,Aquamarine) >> {
+        + OnConnected(connection miface.IConnection) 
+        + OnDisconnect(connection miface.IConnection) 
+        + OnProcess(connection miface.IConnection, iPackage miface.IPackage) 
+
+    }
+}
+"sync.Mutex" *-- "core.ConnectionMgr"
+
+"miface.IConnection" <|-- "core.Connection"
+"miface.IConnectionMgr" <|-- "core.ConnectionMgr"
+"miface.IPackage" <|-- "core.Package"
+"miface.IRouter" <|-- "core.Server"
+"miface.IServer" <|-- "core.Server"
+"miface.IRouter" <|-- "core.defaultRouter"
+
+namespace miface {
+    interface IClient  {
+        + Connect() error
+
+    }
+    interface ICodec  {
+        + Pack(con net.Conn, msg IPackage) error
+        + Unpack(con net.Conn, message IPackage) error
+
+    }
+    interface IConnection  {
+        + GetId() int64
+        + GetType() TypeConnection
+        + Send(message IPackage) bool
+        + GetLocalAddr() net.Addr
+        + GetRemoteAddr() net.Addr
+        + Close() bool
+        + IsClose() bool
+
+    }
+    interface IConnectionMgr  {
+        + Add(connection IConnection) 
+        + Delete(connection IConnection) 
+
+    }
+    interface IPackage  {
+        + GetDataLen() uint32
+        + GetData() []byte
+        + SetDataLen( uint32) 
+        + SetData( []byte) 
+
+    }
+    interface IRouter  {
+        + OnConnected(connection IConnection) 
+        + OnDisconnect(connection IConnection) 
+        + OnProcess(connection IConnection, message IPackage) 
+
+    }
+    interface IServer  {
+        + Run() error
+
+    }
+    class miface.TypeConnection << (T, #FF7700) >>  {
+    }
+}
+
+
+namespace tcp {
+    class client << (S,Aquamarine) >> {
+        - options core.Options
+
+        + Connect() error
+
+    }
+    class connection << (S,Aquamarine) >> {
+        - con *net.TCPConn
+
+        - start() error
+        - waitExit() 
+        - read() 
+        - write() 
+        - destroy() 
+
+    }
+    class server << (S,Aquamarine) >> {
+        - listener net.Listener
+
+        - listen() error
+        - waitExit() 
+        - accept() 
+        - genOptions() core.Options
+
+        + Run() error
+        + Destroy() 
+
+    }
+}
+"core.Connection" *-- "tcp.connection"
+"core.Server" *-- "tcp.server"
+
+"miface.IClient" <|-- "tcp.client"
+"miface.IServer" <|-- "tcp.server"
+
+namespace udp {
+    class client << (S,Aquamarine) >> {
+        - options core.Options
+
+        + Connect() error
+
+    }
+    class connection << (S,Aquamarine) >> {
+        - con *net.UDPConn
+        - readChan <font color=blue>chan</font> miface.IPackage
+
+        - start() 
+        - waitExit() 
+        - write() 
+        - read() 
+        - destroy() 
+
+        + RevMsg(message miface.IPackage) bool
+
+    }
+    class server << (S,Aquamarine) >> {
+        - listener *net.UDPConn
+        - udpMap <font color=blue>map</font>[string]miface.IConnection
+
+        - waitExit() 
+        - listen() error
+        - accept() 
+
+        + Run() error
+        + Destroy() 
+
+    }
+}
+"core.Connection" *-- "udp.connection"
+"core.Server" *-- "udp.server"
+
+"miface.IClient" <|-- "udp.client"
+"miface.IServer" <|-- "udp.server"
+
+"__builtin__.int" #.. "miface.TypeConnection"
+"core.<font color=blue>func</font>(*Options) " #.. "core.Option"
+@enduml

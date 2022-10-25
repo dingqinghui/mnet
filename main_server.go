@@ -8,11 +8,14 @@
 
 package main
 
-import "github.com/dingqinghui/mz/service"
+import (
+	_ "github.com/dingqinghui/mz/service"
+	"time"
+)
 
 func main() {
-	watchDog := service.NewWatchdog()
-	watchDog.Init()
-	watchDog.Run()
-	select {}
+
+	//service := actor.NewService("watchDog")
+
+	time.Sleep(time.Hour * 2)
 }

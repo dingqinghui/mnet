@@ -11,6 +11,7 @@ package service
 import (
 	"github.com/dingqinghui/mz/actor"
 	"github.com/dingqinghui/mz/actor/iface"
+	iface2 "github.com/dingqinghui/mz/actorNew"
 	"github.com/dingqinghui/mz/message"
 	"github.com/dingqinghui/mz/mznet/codec"
 	"github.com/dingqinghui/mz/mznet/core"
@@ -19,13 +20,17 @@ import (
 
 type (
 	Client struct {
-		*actor.Actor
+		*actor.BaseActor
 	}
 )
 
-func NewClient() iface.IActor {
+func init() {
+	actor.RegistryActor("client", NewClient)
+}
+
+func NewClient() iface2.IActor {
 	return &Client{
-		Actor: actor.New(),
+		BaseActor: actor.NewBase(),
 	}
 }
 
@@ -58,7 +63,6 @@ func (p *Client) Init(args ...interface{}) {
 				log.Print("SocketActDisconnect")
 			}
 		})
-
 }
 
 func (p *Client) Destroy() {
