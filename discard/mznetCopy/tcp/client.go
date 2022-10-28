@@ -16,6 +16,7 @@ import (
 
 type client struct {
 	options core.Options
+	miface.IConnection
 }
 
 func NewClient(options core.Options) miface.IClient {
@@ -30,6 +31,6 @@ func (c *client) Connect() error {
 		return err
 	}
 
-	NewConnection(c.options.Network, con, miface.TypeConnectionConnect, c.options)
+	c.IConnection = NewConnection(c.options.Network, con, miface.TypeConnectionConnect, c.options)
 	return nil
 }

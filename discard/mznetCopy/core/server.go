@@ -17,20 +17,18 @@ import (
 type (
 	Server struct {
 		Options Options
-		CMgr    miface.IConnectionMgr
 		Stop    atomic.Value
-
-		Ctx    context.Context // 通知子连接退出
-		Cancel context.CancelFunc
+		Ctx     context.Context // 通知子连接退出
+		Cancel  context.CancelFunc
 	}
 )
 
 func NewServer(options Options) *Server {
 	s := &Server{
 		Options: options,
-		CMgr:    NewConnectionMgr(),
 	}
 	s.init()
+
 	return s
 }
 func (s *Server) init() {
@@ -39,11 +37,9 @@ func (s *Server) init() {
 }
 
 func (s *Server) OnConnected(connection miface.IConnection) {
-	s.CMgr.Add(connection)
 	s.Options.Router.OnConnected(connection)
 }
 func (s *Server) OnDisconnect(connection miface.IConnection) {
-	s.CMgr.Delete(connection)
 	s.Options.Router.OnDisconnect(connection)
 }
 func (s *Server) OnProcess(connection miface.IConnection, message miface.IPackage) {
@@ -86,7 +82,4 @@ func (s *Server) Close() bool {
 
 	s.Cancel()
 	return true
-}
-func (s *Server) Run() error {
-	return nil
 }

@@ -22,9 +22,8 @@ type Connection struct {
 	Options               Options
 	ConType               miface.TypeConnection
 	localAddr, remoteAddr net.Addr
-
-	Ctx    context.Context // 通知子连接退出
-	Cancel context.CancelFunc
+	Ctx                   context.Context // 通知子连接退出
+	Cancel                context.CancelFunc
 }
 
 func NewConnection(conType miface.TypeConnection, options Options, localAddr, remoteAddr net.Addr) *Connection {
@@ -84,10 +83,10 @@ func (c *Connection) SetClose() bool {
 // @Description: 主动关闭
 // @receiver s
 //
-func (c *Connection) Close() bool {
+func (c *Connection) Close() error {
 	if c.SetClose() {
 		c.Cancel()
-		return true
+		return nil
 	}
-	return false
+	return nil
 }

@@ -53,7 +53,7 @@ func (a *BaseActor) OnProcess(connection miface.IConnection, pack miface.IPackag
 func (a *BaseActor) NetListen(options ...core.Option) miface.IServer {
 	// 网络消息 回调到 actor基类
 	options = append(options, core.WithRouter(a))
-	s := mznet.NewServer(options...)
+	s := mznet.NewTcpServer(options...)
 	if err := s.Run(); err != nil {
 		log.Printf("server start fail")
 		return nil

@@ -9,6 +9,7 @@
 package udp
 
 import (
+	"errors"
 	"github.com/dingqinghui/mz/mznet/core"
 	"github.com/dingqinghui/mz/mznet/miface"
 	"log"
@@ -21,21 +22,28 @@ type server struct {
 	udpMap   map[string]miface.IConnection
 }
 
-func NewUdpServer(options core.Options) miface.IServer {
+func NewUdpServer(options core.Options) (miface.IServer, error) {
 	s := &server{
 		udpMap: make(map[string]miface.IConnection),
 	}
-
 	s.Server = core.NewServer(options)
-	return s
-}
 
-func (s *server) Run() error {
 	if err := s.listen(); err != nil {
-		return err
+		return nil, err
 	}
 	go s.waitExit()
-	go s.accept()
+	return s, nil
+}
+
+func (s *server) Accept() error {
+	return s.accept()
+}
+
+func (s *server) Close() error {
+	if s.Server.Destroy() {
+		return nil
+	}
+	_ = s.listener.Close()
 	return nil
 }
 
@@ -62,34 +70,21 @@ func (s *server) listen() error {
 	return nil
 }
 
-func (s *server) accept() {
-	defer s.Close()
-	for true {
-		b := make([]byte, 1024)
-		n, addr, err := s.listener.ReadFrom(b)
-		if err != nil {
-			return
-		}
-
-		if _, ok := s.udpMap[addr.String()]; !ok {
-			options := s.Options
-			options.UdpAddr = addr
-			c := newConnection(s.Options.Network, s.listener, miface.TypeConnectionAccept, options)
-			s.udpMap[addr.String()] = c
-		}
-		con := s.udpMap[addr.String()]
-		udpCon, ok := con.(*connection)
-		if !ok {
-			log.Printf("change type connection fail")
-			continue
-		}
-		udpCon.RevMsg(core.NewPackage(uint32(n), b[:n]))
+func (s *server) accept() error {
+	b := make([]byte, 1024)
+	n, addr, err := s.listener.ReadFrom(b)
+	if err != nil {
+		return err
 	}
-}
-
-func (s *server) Destroy() {
-	if s.Server.Destroy() {
-		return
+	if _, ok := s.udpMap[addr.String()]; !ok {
+		c := newConnection(s.Options.Network, s.listener, miface.TypeConnectionAccept, addr, s.Options)
+		s.udpMap[addr.String()] = c
 	}
-	_ = s.listener.Close()
+	con := s.udpMap[addr.String()]
+	udpCon, ok := con.(*connection)
+	if !ok {
+		return errors.New("change type fail")
+	}
+	udpCon.RevMsg(miface.NewMessage(uint16(n), b[:n]))
+	return nil
 }

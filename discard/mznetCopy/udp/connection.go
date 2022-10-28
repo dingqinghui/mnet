@@ -17,14 +17,16 @@ import (
 type connection struct {
 	*core.Connection
 	con      *net.UDPConn
-	readChan chan miface.IPackage
+	readChan chan *miface.Message
+	addr     net.Addr
 }
 
-func newConnection(_ string, con net.Conn, conType miface.TypeConnection, options core.Options) miface.IConnection {
+func newConnection(_ string, con net.Conn, conType miface.TypeConnection, addr net.Addr, options core.Options) miface.IConnection {
 	c := &connection{
 		con:        con.(*net.UDPConn),
+		addr:       addr,
 		Connection: core.NewConnection(conType, options, con.LocalAddr(), con.RemoteAddr()),
-		readChan:   make(chan miface.IPackage, 0),
+		readChan:   make(chan *miface.Message, 0),
 	}
 	c.start()
 	return c
@@ -56,7 +58,7 @@ func (u *connection) write() {
 			}
 			switch u.GetType() {
 			case miface.TypeConnectionAccept:
-				if _, err := u.con.WriteTo(msg.GetData(), u.Options.UdpAddr); err != nil {
+				if _, err := u.con.WriteTo(msg.GetData(), u.addr); err != nil {
 					return
 				}
 			case miface.TypeConnectionConnect:
@@ -68,7 +70,7 @@ func (u *connection) write() {
 	}
 }
 
-func (u *connection) RevMsg(message miface.IPackage) bool {
+func (u *connection) RevMsg(message *miface.Message) bool {
 	if u.readChan == nil {
 		return false
 	}
@@ -84,7 +86,7 @@ func (u *connection) read() {
 			if !ok {
 				return
 			}
-			if msg.GetDataLen() == 0 {
+			if msg.Len == 0 {
 				return
 			}
 			u.Options.Router.OnProcess(u, msg)

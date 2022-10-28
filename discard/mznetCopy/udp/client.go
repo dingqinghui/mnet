@@ -17,6 +17,7 @@ import (
 
 type client struct {
 	options core.Options
+	miface.IConnection
 }
 
 func NewUdpClient(options core.Options) miface.IClient {
@@ -31,12 +32,16 @@ func (u *client) Connect() error {
 		return err
 	}
 
+	addr, err := net.ResolveUDPAddr("udp", u.options.Address)
+	if err != nil {
+		return err
+	}
 	udpCon, ok := con.(*net.UDPConn)
 	if !ok {
 		return errors.New("change type UDPConn fail")
 	}
 
-	c := newConnection(u.options.Network, udpCon, miface.TypeConnectionConnect, u.options)
+	u.IConnection = newConnection(u.options.Network, udpCon, miface.TypeConnectionConnect, addr, u.options)
 
 	for true {
 		b := make([]byte, 1024)
@@ -44,11 +49,11 @@ func (u *client) Connect() error {
 		if err != nil {
 			return err
 		}
-		udpConnection, ok := c.(*connection)
+		udpConnection, ok := u.IConnection.(*connection)
 		if !ok {
 			return errors.New("change type connection fail")
 		}
-		udpConnection.RevMsg(core.NewPackage(uint32(n), b[:n]))
+		udpConnection.RevMsg(miface.NewMessage(uint16(n), b[:n]))
 	}
 	return nil
 }

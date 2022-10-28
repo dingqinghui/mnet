@@ -11,7 +11,6 @@ package core
 import (
 	"context"
 	"github.com/dingqinghui/mz/mznet/miface"
-	"net"
 )
 
 type (
@@ -22,7 +21,6 @@ type (
 		Network, Address string
 		Router           miface.IRouter
 		Codec            miface.ICodec
-		UdpAddr          net.Addr
 	}
 )
 
@@ -61,11 +59,5 @@ func WithRouter(router miface.IRouter) Option {
 func WithTcpCodec(codec miface.ICodec) Option {
 	return func(opts *Options) {
 		opts.Codec = codec
-	}
-}
-
-func WithUdpRemoteAddr(addr net.Addr) Option {
-	return func(opts *Options) {
-		opts.UdpAddr = addr
 	}
 }

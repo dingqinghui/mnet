@@ -22,18 +22,26 @@ type (
 	}
 )
 
-func NewServer(options core.Options) miface.IServer {
+func NewServer(options core.Options) (miface.IServer, error) {
 	s := &server{}
 	s.Server = core.NewServer(options)
-	return s
-}
 
-func (s *server) Run() error {
 	if err := s.listen(); err != nil {
-		return err
+		return nil, err
 	}
 	go s.waitExit()
-	go s.accept()
+	return s, nil
+}
+
+func (s *server) Accept() error {
+	return s.accept()
+}
+
+func (s *server) Close() error {
+	if s.Server.Destroy() {
+		return nil
+	}
+	_ = s.listener.Close()
 	return nil
 }
 
@@ -58,15 +66,12 @@ func (s *server) waitExit() {
 	}
 }
 
-func (s *server) accept() {
-	defer s.Close()
-	for true {
-		c, err := s.listener.Accept()
-		if err != nil {
-			return
-		}
-		NewConnection(s.Options.Network, c, miface.TypeConnectionAccept, s.genOptions())
+func (s *server) accept() (miface.IConnection, error) {
+	c, err := s.listener.Accept()
+	if err != nil {
+		return nil, err
 	}
+	return NewConnection(s.Options.Network, c, miface.TypeConnectionAccept, s.genOptions()), nil
 }
 
 func (s *server) genOptions() core.Options {
@@ -76,11 +81,4 @@ func (s *server) genOptions() core.Options {
 	// context
 	options.ParentCtx = s.Ctx
 	return options
-}
-
-func (s *server) Destroy() {
-	if s.Server.Destroy() {
-		return
-	}
-	_ = s.listener.Close()
 }

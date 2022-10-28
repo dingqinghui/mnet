@@ -38,7 +38,6 @@ func (t *connection) start() error {
 	go t.read()
 	go t.write()
 	t.Options.Router.OnConnected(t)
-
 	return nil
 }
 
