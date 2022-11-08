@@ -14,3 +14,13 @@ type (
 		Connect() error
 	}
 )
+
+func NewClient(config *ClientConfig) IClient {
+	switch config.Network {
+	case "tcp":
+		return newTcpClient(config)
+	case "udp":
+		return newUdpClient(config)
+	}
+	return nil
+}

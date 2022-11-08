@@ -49,13 +49,14 @@ type connection struct {
 	ICloser
 }
 
-func newConnection(con net.Conn, cType ConnectionType) IConnection {
+func newConnection(con net.Conn, cType ConnectionType, eventListener IEventListener) IConnection {
 	return &connection{
-		id:        genId(),
-		con:       con,
-		cType:     cType,
-		writeChan: make(chan interface{}, 1024),
-		ICloser:   defaultCloser,
+		id:            genId(),
+		con:           con,
+		cType:         cType,
+		writeChan:     make(chan interface{}, 1024),
+		ICloser:       defaultCloser,
+		eventListener: eventListener,
 	}
 }
 

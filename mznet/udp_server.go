@@ -13,20 +13,17 @@ import (
 )
 
 type udpServer struct {
-	opts       *serverOptions
+	config     *ServerConfig
 	listener   *net.UDPConn
 	udpAddrMap map[string]IConnection
 	ICloser
 }
 
-func newUdpServer(opts ...ServerOptionFun) IServer {
+func newUdpServer(config *ServerConfig) IServer {
 	s := &udpServer{
-		opts:       defaultServerOption,
+		config:     config,
 		udpAddrMap: make(map[string]IConnection),
 		ICloser:    defaultCloser,
-	}
-	for _, opt := range opts {
-		opt(s.opts)
 	}
 	return s
 }
@@ -40,11 +37,11 @@ func (s *udpServer) RunEventLoop() error {
 }
 
 func (s *udpServer) listen() error {
-	udpAddr, err := net.ResolveUDPAddr(s.opts.network, s.opts.listenAddress)
+	udpAddr, err := net.ResolveUDPAddr(s.config.Network, s.config.ListenAddress)
 	if err != nil {
 		return err
 	}
-	listener, err := net.ListenUDP(s.opts.network, udpAddr)
+	listener, err := net.ListenUDP(s.config.Network, udpAddr)
 	if err != nil {
 		return err
 	}
@@ -67,18 +64,18 @@ func (s *udpServer) accept() {
 		b := make([]byte, 1024)
 		n, addr, err := s.listener.ReadFromUDP(b)
 		if err != nil {
-			s.opts.eventListener.OnError(nil, err)
+			s.config.EventListener.OnError(nil, err)
 			return
 		}
 		if _, ok := s.udpAddrMap[addr.String()]; !ok {
-			c := newUdpConnection(s.listener, AcceptConnection, addr.String(), s.opts.network)
+			c := newUdpConnection(s.listener, AcceptConnection, addr.String(), s.config.Network, s.config.EventListener)
 			s.udpAddrMap[addr.String()] = c
-			s.opts.eventListener.OnConnected(c)
+			s.config.EventListener.OnConnected(c)
 		}
 		con := s.udpAddrMap[addr.String()]
 		udpCon, ok := con.(*udpConnection)
 		if !ok {
-			s.opts.eventListener.OnError(nil, err)
+			s.config.EventListener.OnError(nil, err)
 			return
 		}
 		udpCon.recUdpStream(b[:n])

@@ -14,3 +14,13 @@ type (
 		ICloser
 	}
 )
+
+func NewServer(config *ServerConfig) IServer {
+	switch config.Network {
+	case "tcp":
+		return NewTcpServer(config)
+	case "udp":
+		return newUdpServer(config)
+	}
+	return nil
+}

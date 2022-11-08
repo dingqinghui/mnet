@@ -13,33 +13,31 @@ import (
 )
 
 type udpClient struct {
-	opts *clientOptions
 	IConnection
+	config *ClientConfig
 }
 
-func newUdpClient(opts ...ClientOptionFun) IClient {
+func newUdpClient(config *ClientConfig) IClient {
 	s := &udpClient{
-		opts: defaultClientOption,
+		config: config,
 	}
-	for _, opt := range opts {
-		opt(s.opts)
-	}
+
 	return s
 }
 
 func (c *udpClient) Connect() error {
-	raddr, err := net.ResolveUDPAddr("udp", c.opts.address)
+	radar, err := net.ResolveUDPAddr("udp", c.config.Address)
 	if err != nil {
 		return err
 	}
 
-	conn, err := net.DialUDP("udp", nil, raddr)
+	conn, err := net.DialUDP("udp", nil, radar)
 	if err != nil {
 		return err
 	}
 
-	c.IConnection = newUdpConnection(conn, ConnectConnection, c.opts.address, c.opts.network)
-	c.opts.eventListener.OnConnected(c.IConnection)
+	c.IConnection = newUdpConnection(conn, ConnectConnection, c.config.Address, c.config.Network, c.config.EventListener)
+	c.config.EventListener.OnConnected(c.IConnection)
 
 	go c.read()
 	return nil
@@ -51,7 +49,7 @@ func (c *udpClient) read() {
 		udpCon := c.GetCon().(*net.UDPConn)
 		n, _, err := udpCon.ReadFromUDP(b)
 		if err != nil {
-			c.opts.eventListener.OnError(c.IConnection, err)
+			c.config.EventListener.OnError(c.IConnection, err)
 			return
 		}
 		uc := c.IConnection.(*udpConnection)

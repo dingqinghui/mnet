@@ -21,9 +21,9 @@ type udpConnection struct {
 	network  string
 }
 
-func newUdpConnection(con *net.UDPConn, cType ConnectionType, addr string, network string) *udpConnection {
+func newUdpConnection(con *net.UDPConn, cType ConnectionType, addr string, network string, eventListener IEventListener) *udpConnection {
 	u := &udpConnection{
-		IConnection: newConnection(con, cType),
+		IConnection: newConnection(con, cType, eventListener),
 		readChan:    make(chan []byte, 64),
 		addr:        addr,
 		network:     network,

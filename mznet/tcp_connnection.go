@@ -14,9 +14,9 @@ type tcpConnection struct {
 	IConnection
 }
 
-func newTcpConnection(con net.Conn, cType ConnectionType) *tcpConnection {
+func newTcpConnection(con net.Conn, cType ConnectionType, eventListener IEventListener) *tcpConnection {
 	t := &tcpConnection{
-		IConnection: newConnection(con, cType),
+		IConnection: newConnection(con, cType, eventListener),
 	}
 	go t.read()
 	go t.write()

@@ -13,27 +13,24 @@ import (
 )
 
 type tpcClient struct {
-	opts *clientOptions
+	config *ClientConfig
 	IConnection
 }
 
-func newTcpClient(opts ...ClientOptionFun) IClient {
+func newTcpClient(config *ClientConfig) IClient {
 	s := &tpcClient{
-		opts: defaultClientOption,
-	}
-	for _, opt := range opts {
-		opt(s.opts)
+		config: config,
 	}
 	return s
 }
 
 func (c *tpcClient) Connect() error {
-	con, err := net.Dial(c.opts.network, c.opts.address)
+	con, err := net.Dial(c.config.Network, c.config.Address)
 	if err != nil {
 		return err
 	}
-	c.IConnection = newTcpConnection(con, ConnectConnection)
-	c.opts.eventListener.OnConnected(c.IConnection)
+	c.IConnection = newTcpConnection(con, ConnectConnection, c.config.EventListener)
+	c.config.EventListener.OnConnected(c.IConnection)
 	return nil
 }
 

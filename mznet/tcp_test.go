@@ -8,11 +8,6 @@
 
 package mznet
 
-import (
-	"testing"
-	"time"
-)
-
 type defaultEventListener struct{}
 
 func (defaultEventListener) OnConnected(connection IConnection) bool {
@@ -48,16 +43,16 @@ func (defaultEventListener) OnError(connection IConnection, err error, users ...
 	return false
 }
 
-func TestNewTcpServer(t *testing.T) {
-	serve := NewTcpServer(WithServerNetwork("tcp"), WithServerAddress("127.0.0.1:50000"), WithServerEventListener(new(defaultEventListener)))
-	serve.RunEventLoop()
-
-	time.Sleep(time.Second * 10000)
-}
-
-func TestNewTcpClient(t *testing.T) {
-	client := newTcpClient(WithClientAddress("tcp"), WithClientAddress("127.0.0.1:50000"), WithClientEventListener(new(defaultEventListener)))
-	client.Connect()
-	_ = client
-	time.Sleep(time.Second * 10000)
-}
+//func TestNewTcpServer(t *testing.T) {
+//	serve := NewTcpServer(WithServerNetwork("tcp"), WithServerAddress("127.0.0.1:50000"), WithServerEventListener(new(defaultEventListener)))
+//	serve.RunEventLoop()
+//
+//	time.Sleep(time.Second * 10000)
+//}
+//
+//func TestNewTcpClient(t *testing.T) {
+//	client := newTcpClient(WithClientAddress("tcp"), WithClientAddress("127.0.0.1:50000"), WithClientEventListener(new(defaultEventListener)))
+//	client.Connect()
+//	_ = client
+//	time.Sleep(time.Second * 10000)
+//}

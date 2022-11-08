@@ -13,18 +13,15 @@ import (
 )
 
 type tcpServer struct {
-	opts     *serverOptions
+	config   *ServerConfig
 	listener net.Listener
 	ICloser
 }
 
-func NewTcpServer(opts ...ServerOptionFun) IServer {
+func NewTcpServer(config *ServerConfig) IServer {
 	s := &tcpServer{
-		opts:    defaultServerOption,
+		config:  config,
 		ICloser: defaultCloser,
-	}
-	for _, opt := range opts {
-		opt(s.opts)
 	}
 	return s
 }
@@ -38,7 +35,7 @@ func (s *tcpServer) RunEventLoop() error {
 }
 
 func (s *tcpServer) listen() error {
-	listener, err := net.Listen(s.opts.network, s.opts.listenAddress)
+	listener, err := net.Listen(s.config.Network, s.config.ListenAddress)
 	if err != nil {
 		return err
 	}
@@ -50,12 +47,12 @@ func (s *tcpServer) accept() {
 	for true {
 		c, err := s.listener.Accept()
 		if err != nil {
-			s.opts.eventListener.OnError(nil, err)
+			s.config.EventListener.OnError(nil, err)
 			return
 		}
 		_ = c
-		con := newTcpConnection(c, AcceptConnection)
-		s.opts.eventListener.OnConnected(con)
+		con := newTcpConnection(c, AcceptConnection, s.config.EventListener)
+		s.config.EventListener.OnConnected(con)
 	}
 }
 
